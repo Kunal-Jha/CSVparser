@@ -5,9 +5,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public class Row {
-	String label;
+import com.google.gson.annotations.Expose;
 
+public class Row {
+	@Expose
+	String label;
+	@Expose
 	Map<String, Double> attributes;
 
 	public Optional<String> id;

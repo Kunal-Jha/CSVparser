@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 import org.rapidminer.csvparser.model.Row;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.univocity.parsers.common.processor.RowListProcessor;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
@@ -54,6 +55,7 @@ public class ParserEngine {
 			parser.parse(new FileReader(csvFilePath));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+			System.out.println("NOT_FOUND");
 		}
 		List<String> columns = Arrays.asList(rowProcessor.getHeaders());
 		List<String[]> rowsFromFile = this.rowProcessor.getRows();
@@ -92,18 +94,21 @@ public class ParserEngine {
 		if (!groupedLabelMap.containsKey(key)) {
 			return null;
 		}
-
-		List<Row> listInGroup = groupedLabelMap.get(key);
+		List<Row> membersInGroup = groupedLabelMap.get(key);
 		Row result = new Row(key);
 		for (String attribute : attributeList) {
-			DoubleStream sortedAttribute = listInGroup.stream().mapToDouble(a -> a.getfromMap(attribute)).sorted();
-			double median = listInGroup.size() % 2 == 0
-					? sortedAttribute.skip(listInGroup.size() / 2 - 1).limit(2).average().getAsDouble()
-					: sortedAttribute.skip(listInGroup.size() / 2).findFirst().getAsDouble();
+
+			DoubleStream valuesOfAttribute = membersInGroup.stream().mapToDouble(a -> a.getfromMap(attribute)).sorted();
+			double median = membersInGroup.size() % 2 == 0
+					? valuesOfAttribute.skip(membersInGroup.size() / 2 - 1).limit(2).average().getAsDouble()
+					: valuesOfAttribute.skip(membersInGroup.size() / 2).findFirst().getAsDouble();
 			result.addToMap(attribute, median);
 		}
-
-		return new Gson().toJson(result);
+		if (membersInGroup.get(0).getId().isPresent()) {
+			result.setId(Optional.of(membersInGroup.get(0).getId().get()));
+		}
+		;
+		return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create().toJson(result);
 	}
 
 }

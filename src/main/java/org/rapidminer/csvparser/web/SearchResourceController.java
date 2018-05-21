@@ -1,6 +1,7 @@
 package org.rapidminer.csvparser.web;
 
 import org.rapidminer.csvparser.Utils.ParserEngine;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,11 +20,17 @@ public class SearchResourceController {
 	}
 
 	@RequestMapping(value = "/parser/filename/{fileName}/query/{query}", method = RequestMethod.GET)
-	public ResponseEntity<?> getValue(@PathVariable String fileName, @PathVariable String query) {
+	public ResponseEntity<?> getValueRest(@PathVariable String fileName, @PathVariable String query) {
 		ParserEngine entityRepo = new ParserEngine();
-		if (fileName != null && query != null) {
+		if (fileName != null) {
 			entityRepo.changeDataset(fileName);
-			return ResponseEntity.ok(entityRepo.getMedian(query));
+		}
+		if (query != null) {
+			String result = entityRepo.getMedian(query);
+			if (result != null)
+				return ResponseEntity.ok(result);
+			else
+				return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.BAD_REQUEST);
 		} else
 			return (ResponseEntity<?>) ResponseEntity.badRequest();
 	}
