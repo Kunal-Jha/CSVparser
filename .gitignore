@@ -1,0 +1,16 @@
+
+# Eclipse 
+*.class
+.classpath
+.project
+
+.settings
+target/
+
+
+
+
+# Project-based exclusions
+**/.clover/
+*.csv
+/target/
