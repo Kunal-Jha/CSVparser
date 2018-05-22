@@ -2,6 +2,10 @@ package org.rapidminer.csvparser.Utils;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +13,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
@@ -17,11 +23,13 @@ import org.rapidminer.csvparser.model.Row;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.univocity.parsers.common.processor.RowListProcessor;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
 public class ParserEngine {
+	private final static Logger LOGGER = Logger.getLogger(ParserEngine.class.getName());
 	String csvFilePath;
 	int numberOfAttributes;
 	int indexOfLabel;
@@ -55,7 +63,7 @@ public class ParserEngine {
 			parser.parse(new FileReader(csvFilePath));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			System.out.println("NOT_FOUND");
+			LOGGER.log(Level.WARNING, "NOT_FOUND");
 		}
 		List<String> columns = Arrays.asList(rowProcessor.getHeaders());
 		List<String[]> rowsFromFile = this.rowProcessor.getRows();
@@ -76,13 +84,22 @@ public class ParserEngine {
 			}
 			Row row = new Row(a[indexOfLabel]);
 			for (int i = 0; i <= numberOfAttributes; i++) {
-				row.addToMap(columns.get(i), Double.parseDouble(a[i]));
+
+				try {
+					Double value = Double.parseDouble(a[i]);
+					row.addAttributeValue(columns.get(i), value);
+				} catch (NumberFormatException e) {
+					row.addMiscAttributes(columns.get(i), a[i]);
+					LOGGER.info("adding to Misc");
+				}
+
 			}
 			if (indexOfId != -1) {
 				row.setId(Optional.of(a[indexOfId]));
 			}
 			csvElements.accept(row);
 			attributeList = row.getAttributesList();
+			// System.out.println(row.toString());
 		});
 		Supplier<Stream<Row>> rowElements = () -> csvElements.build();
 		Map<String, List<Row>> groupedLabelMap = rowElements.get().collect(Collectors.groupingBy(Row::getLabel));
@@ -94,21 +111,33 @@ public class ParserEngine {
 		if (!groupedLabelMap.containsKey(key)) {
 			return null;
 		}
+
 		List<Row> membersInGroup = groupedLabelMap.get(key);
 		Row result = new Row(key);
 		for (String attribute : attributeList) {
 
-			DoubleStream valuesOfAttribute = membersInGroup.stream().mapToDouble(a -> a.getfromMap(attribute)).sorted();
+			DoubleStream valuesOfAttribute = membersInGroup.stream().mapToDouble(a -> a.getAttributeValue(attribute))
+					.sorted();
 			double median = membersInGroup.size() % 2 == 0
 					? valuesOfAttribute.skip(membersInGroup.size() / 2 - 1).limit(2).average().getAsDouble()
 					: valuesOfAttribute.skip(membersInGroup.size() / 2).findFirst().getAsDouble();
-			result.addToMap(attribute, median);
+			result.addMedian(attribute, median);
 		}
 		if (membersInGroup.get(0).getId().isPresent()) {
 			result.setId(Optional.of(membersInGroup.get(0).getId().get()));
 		}
-		;
-		return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create().toJson(result);
+
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+		JsonElement jsonElement = gson.toJsonTree(result);
+		jsonElement.getAsJsonObject().addProperty("timeStamp", new Timestamp(System.currentTimeMillis()).toString());
+		try (Writer writer = new FileWriter("Result_" + this.csvFilePath + ".json", true)) {
+			gson.toJson(jsonElement, writer);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return gson.toJson(jsonElement);
+
 	}
 
 }

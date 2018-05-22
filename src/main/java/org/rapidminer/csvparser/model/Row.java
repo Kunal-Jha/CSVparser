@@ -10,8 +10,11 @@ import com.google.gson.annotations.Expose;
 public class Row {
 	@Expose
 	String label;
-	@Expose
+
 	Map<String, Double> attributes;
+	Map<String, String> miscAttributes;
+	@Expose
+	Map<String, Double> medianValues;
 
 	public Optional<String> id;
 
@@ -19,32 +22,58 @@ public class Row {
 		// TODO Auto-generated constructor stub
 		this.label = lab;
 		this.attributes = new HashMap<String, Double>();
+		this.medianValues = new HashMap<String, Double>();
+		this.miscAttributes = new HashMap<String, String>();
 		this.id = Optional.empty();
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder a = new StringBuilder(this.label + " : ");
-
 		if (id.isPresent()) {
 			a.append("  id :" + this.id.get());
 		}
 		for (Map.Entry<String, Double> entry : this.attributes.entrySet()) {
 			a.append("   " + entry.getKey() + "-->" + entry.getValue());
 		}
+		if (!this.miscAttributes.isEmpty()) {
+			for (Map.Entry<String, String> entry : this.miscAttributes.entrySet()) {
+				a.append("  " + entry.getKey() + "-->" + entry.getValue());
+			}
+		}
 		return a.toString();
+	}
+
+	public void addAttributeValue(String key, Double value) {
+		this.attributes.put(key, value);
+	}
+
+	public Double getAttributeValue(String name) {
+		return this.attributes.get(name);
+	}
+
+	public void addMiscAttributes(String key, String value) {
+		this.miscAttributes.put(key, value);
+	}
+
+	public String getMiscAttributes(String name) {
+		return this.miscAttributes.get(name);
+	}
+
+	public void addMedian(String key, Double value) {
+		this.medianValues.put(key, value);
+	}
+
+	public Double getMedian(String key) {
+		return this.medianValues.get(key);
 	}
 
 	public Set<String> getAttributesList() {
 		return this.attributes.keySet();
 	}
 
-	public void addToMap(String key, Double value) {
-		this.attributes.put(key, value);
-	}
-
-	public Double getfromMap(String name) {
-		return this.attributes.get(name);
+	public Set<String> getMiscAttributesList() {
+		return this.miscAttributes.keySet();
 	}
 
 	/**
@@ -67,13 +96,6 @@ public class Row {
 	 */
 	public Optional<String> getId() {
 		return id;
-	}
-
-	/**
-	 * @return the attributes
-	 */
-	public Map<String, Double> getAttributes() {
-		return attributes;
 	}
 
 	/**
