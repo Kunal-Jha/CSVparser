@@ -1,4 +1,4 @@
-package org.aksw.dice.HARESearch;
+package org.rapidminer.csvparser;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

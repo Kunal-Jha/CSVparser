@@ -130,7 +130,8 @@ public class ParserEngine {
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
 		JsonElement jsonElement = gson.toJsonTree(result);
 		jsonElement.getAsJsonObject().addProperty("timeStamp", new Timestamp(System.currentTimeMillis()).toString());
-		try (Writer writer = new FileWriter("Result_" + this.csvFilePath + ".json", true)) {
+		jsonElement.getAsJsonObject().addProperty("file", this.csvFilePath);
+		try (Writer writer = new FileWriter("Result.json")) {
 			gson.toJson(jsonElement, writer);
 		} catch (IOException e) {
 			e.printStackTrace();

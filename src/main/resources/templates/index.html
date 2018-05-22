@@ -54,10 +54,10 @@
 						<option>gaussian.csv</option>
 					</select> <label for="queryHelp">Query</label> <input type="text" id="query"
 						class="form-control " placeholder="Enter Query"> <small
-						id="emailHelp" class="form-text text-muted">Enter
-						ClassName and Filename.</small>
+						id="helpText" class="form-text text-muted">Enter ClassName
+						and Filename. Actual Log is stored offline in Result.json file. </small>
 				</div>
-				<button type="submit" class="btn btn-primary  btn-lg"
+				<button type="submit" class="btn btn-primary btn-lg"
 					onclick="getResult()">Submit</button>
 			</form>
 
@@ -65,14 +65,27 @@
 		<section id="resultsection">
 			<!-- Page Features -->
 			<div class="row text-center">
-				<h2>Result</h2>
+				<h2>Result and Log</h2>
 			</div>
 			<div class="row">
-				<div id="resultTable"></div>
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">Query</th>
+							<th scope="col">File</th>
+							<th scope="col">Result</th>
+						</tr>
+					</thead>
+					<tbody id="row">
 
+					</tbody>
+				</table>
 			</div>
 			<!-- /.row -->
 		</section>
+
+
 	</div>
 	<!-- /.container -->
 
