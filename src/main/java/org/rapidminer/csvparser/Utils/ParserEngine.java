@@ -28,6 +28,10 @@ import com.univocity.parsers.common.processor.RowListProcessor;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
+/*
+ * The csv file reader class. It calculates the median using stream. 
+ * @author: Kunal Jha
+ * */
 public class ParserEngine {
 	private final static Logger LOGGER = Logger.getLogger(ParserEngine.class.getName());
 	String csvFilePath;

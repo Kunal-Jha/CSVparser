@@ -1,13 +1,6 @@
 package org.rapidminer.csvparser.web;
 
-import java.io.IOException;
-
 import java.util.logging.Logger;
-import java.util.stream.Stream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-
 import org.rapidminer.csvparser.Utils.ParserEngine;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,16 +9,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.stream.JsonReader;
-
+/*
+ * Controller class for the Service
+ * @author: Kunal Jha
+ * */
 @Controller
 public class QueryController {
 	private final static Logger LOGGER = Logger.getLogger(ParserEngine.class.getName());

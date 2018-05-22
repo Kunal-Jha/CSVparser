@@ -7,6 +7,10 @@ import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
+/*
+ * The Row class is a Java model to read and write elements. 
+ * @author: Kunal Jha
+ * */
 public class Row {
 	@Expose
 	String label;
