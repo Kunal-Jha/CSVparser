@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.google.gson.GsonBuilder;
+
 /*
  * Controller class for the Service
  * @author: Kunal Jha
@@ -54,7 +56,7 @@ public class QueryController {
 			if (result != null)
 				return ResponseEntity.ok(result);
 		}
-		return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.BAD_REQUEST);
+		return (ResponseEntity<?>) ResponseEntity.ok(new GsonBuilder().setPrettyPrinting().create().toJson("no hit"));
 	}
 
 }

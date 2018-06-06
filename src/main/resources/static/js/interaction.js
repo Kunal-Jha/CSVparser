@@ -1,6 +1,6 @@
 $(document).ready(function() {
 	$("#resultsection").hide();
-	
+
 	$("#datasetList").submit(function(e) {
 		e.preventDefault();
 	});
@@ -28,6 +28,7 @@ function getResult() {
 		},
 		dataType : "json",// type of data returned
 		success : function(data) {
+
 			printResults(data);
 		}
 	})
@@ -40,7 +41,6 @@ function printResults(data) {
 	content += "<tr> <th scope=\"row\">" + counter + "</th> " + "<td>"
 			+ queryFinal + "</td> " + "<td>" + documentName + "</td> " + "<td>"
 			+ JSON.stringify(results) + "</td>" + "</tr>"
-
 	counter += 1;
 
 	$("#row").append($(content));
